@@ -1,1 +1,0 @@
-This is a basic serial port program. Every byte received from a given COM port is sent as-is into the outlet.
