@@ -2,6 +2,16 @@
 
 The program reads a byte stream from a given COM port and emits it as an LSL stream. This program does not currently support sending a startup sequence to the device or any other kind of 2-way handshake.
 
+# Used items for building from source code
+  * QtCreator 4.9.1
+  * Qt 5.12.4 MSVC2017 64bit
+  * VC++ toolkit v14.1 (Make sure you force the version)
+      * Run `C:\Qt\5.12.4\msvc2017_64\bin\qtenv2.bat`
+      * Run `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat x86_amd64 -vcvars_ver=14.1`
+      * Run per every build `nmake /u /f .\Makefile.Release` (because you might encounter the missing type_traits include file error)
+  * Boost 1.70.0 : [Download Link](https://sourceforge.net/projects/boost/files/boost-binaries/1.70.0/boost_1_70_0-msvc-14.1-64.exe/download)
+  * libLSL 1.13.0-b6: [Download Link](https://github.com/sccn/liblsl/releases/tag/1.13.0-b6)
+
 # Usage
   * Start the SerialPort app. You should see a window like the following.
 > ![serialport.png](serialport.png)
