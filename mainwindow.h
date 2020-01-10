@@ -2,54 +2,35 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QCloseEvent>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
-#include <string>
-#include <vector>
+#include <atomic>
+#include <memory> //for std::unique_ptr
+#include <thread>
+#include <boost/asio/io_context.hpp>
 
-// LSL API
-#include <lsl_cpp.h>
-
-#define WIN32_LEAN_AND_MEAN
-#include "windows.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
-    
+class MainWindow : public QMainWindow {
+	Q_OBJECT
 public:
-    explicit MainWindow(QWidget *parent, const std::string &config_file);
-    ~MainWindow();
+	explicit MainWindow(QWidget *parent, const char *config_file);
+	~MainWindow() noexcept override;
     
 private slots:
-    // config file dialog ops (from main menu)
-    void load_config_dialog();
-    void save_config_dialog();
+	void closeEvent(QCloseEvent *ev) override;
+	void toggleRecording();
 
-    // start the cognionics connection
-    void on_link();
-
-    // close event (potentially disabled)
-    void closeEvent(QCloseEvent *ev);
 private:
-    // background data reader thread
-	void read_thread(HANDLE hPort, int comPort, int baudRate, int samplingRate, int chunkSize, const std::string &streamName);
+	// function for loading / saving the config file
+	QString find_config_file(const char *filename);
+	void load_config(const QString &filename);
+	void save_config(const QString &filename);
+	std::unique_ptr<std::thread> reader{nullptr};
 
-    // raw config file IO
-    void load_config(const std::string &filename);
-    void save_config(const std::string &filename);
-	
-	bool stop_;											// whether the reader thread is supposed to stop
-    boost::shared_ptr<boost::thread> reader_thread_;	// our reader thread
-
-    Ui::MainWindow *ui;
+	std::unique_ptr<Ui::MainWindow> ui; // window pointer
+	boost::asio::io_context io_ctx;
 };
 
 #endif // MAINWINDOW_H
