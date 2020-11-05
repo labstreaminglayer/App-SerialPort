@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>333</height>
+    <width>502</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,9 +26,6 @@
          <string>Core Port Settings</string>
         </property>
         <layout class="QFormLayout" name="formLayout">
-         <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
@@ -78,9 +75,6 @@
          <string>Stream Settings</string>
         </property>
         <layout class="QFormLayout" name="formLayout_2">
-         <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
@@ -92,6 +86,9 @@
           <widget class="QSpinBox" name="samplingRate">
            <property name="toolTip">
             <string>Set this to a non-zero value if you know the sampling rate.</string>
+           </property>
+           <property name="suffix">
+            <string> Hz</string>
            </property>
            <property name="minimum">
             <number>0</number>
@@ -112,7 +109,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="streamName">
+          <widget class="QLineEdit" name="input_name">
            <property name="toolTip">
             <string>The name of the stream within LSL.</string>
            </property>
@@ -294,8 +291,8 @@
          </item>
          <item row="0" column="1">
           <widget class="QSpinBox" name="readIntervalTimeout">
-           <property name="toolTip">
-            <string>Maximum time that may pass between two bytes </string>
+           <property name="suffix">
+            <string> ms</string>
            </property>
            <property name="maximum">
             <number>10000000</number>
@@ -394,40 +391,56 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>415</width>
-     <height>18</height>
+     <width>502</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionLoad_Configuration"/>
     <addaction name="actionSave_Configuration"/>
     <addaction name="separator"/>
-    <addaction name="actionQuit_2"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Configuration">
    <property name="text">
-    <string>Load Configuration</string>
+    <string>&amp;Load Configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionSave_Configuration">
    <property name="text">
-    <string>Save Configuration</string>
+    <string>&amp;Save Configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionQuit_2">
+  <action name="actionAbout">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;About</string>
    </property>
   </action>
  </widget>

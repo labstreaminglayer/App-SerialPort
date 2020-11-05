@@ -1,0 +1,8 @@
+ui_*.h
+/build*/
+/CMakeLists.txt.user
+/CMakeLists.json
+/.vs/
+/CMakeSettings.json
+/out/
+.DS_Store
