@@ -4,7 +4,7 @@ The program reads a byte stream from a given COM port and emits it as an LSL str
 
 # Usage
   * Start the SerialPort app. You should see a window like the following.
-> ![serialport.png](screenshotsserialport.png)
+> ![serialport.png](serialport.png)
 
   * Make sure that your device is plugged in and that you know its COM port (you can usually check this in the Device Manage).
 
@@ -14,4 +14,4 @@ The program reads a byte stream from a given COM port and emits it as an LSL str
 
   * Click the "Link" button. If all goes well you should now have a stream on your lab network that has the name that you entered under Stream Name and type "Raw". Note that you cannot close the app while it is linked.
 
-  * For subsequent uses you can save the settings in the GUI via File / Save Configuration. If the app is frequently used with different settings you might can also make a shortcut on the desktop that points to the app and appends to the Target field the snippet `-c name_of_config.cfg`.
+  * For subsequent uses you can save the settings in the GUI via File / Save Configuration. If the app is frequently used with different settings you might can also make a shortcut on the desktop that points to the app and appends to the Target field the snippet `name_of_config.cfg`.
