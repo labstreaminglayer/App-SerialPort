@@ -6,7 +6,7 @@ The program reads a byte stream from a given COM port and emits it as an LSL str
   * Start the SerialPort app. You should see a window like the following.
 > ![serialport.png](screenshotsserialport.png)
 
-  * Make sure that your device is plugged in and that you know its COM port (you can usually check this in the Device Manage).
+  * Make sure that your device is plugged in and that you know its COM port (you can usually check this in the Device Manager).
 
   * Select the COM port and the BAUD rate (data rate). If you know the nominal sampling rate of your stream (in bytes per second), you can set this in the Stream Sampling Rate (0 means irregular/unknown).
 

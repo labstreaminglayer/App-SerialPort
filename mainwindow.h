@@ -5,10 +5,11 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
 #include <string>
 #include <vector>
+#include <atomic>
+#include <memory>
+#include <thread>
 
 // LSL API
 #include <lsl_cpp.h>
@@ -45,9 +46,9 @@ private:
     // raw config file IO
     void load_config(const std::string &filename);
     void save_config(const std::string &filename);
-	
-	bool stop_;											// whether the reader thread is supposed to stop
-    boost::shared_ptr<boost::thread> reader_thread_;	// our reader thread
+
+    std::unique_ptr<std::thread> reader_thread_{nullptr};   // our reader thread
+    std::atomic<bool> shutdown_{false};                     // flag indicating whether the streaming thread should quit
 
     Ui::MainWindow *ui;
 };

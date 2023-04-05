@@ -2,11 +2,7 @@
 #include "ui_mainwindow.h"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/foreach.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+
 
 MainWindow::MainWindow(QWidget *parent, const std::string &config_file) :
 QMainWindow(parent),
@@ -108,8 +104,7 @@ void MainWindow::on_link() {
 	if (reader_thread_) {
 		// === perform unlink action ===
 		try {
-			stop_ = true;
-			reader_thread_->interrupt();
+			shutdown_ = true;
 			reader_thread_->join();
 			reader_thread_.reset();
 		} catch(std::exception &e) {
@@ -138,7 +133,7 @@ void MainWindow::on_link() {
 			int readTotalTimeoutMultiplier = ui->readTotalTimeoutMultiplier->value();
 
 			// try to open the serial port
-			std::string fname = "\\\\.\\COM" + boost::lexical_cast<std::string>(comPort);
+			std::string fname = "\\\\.\\COM" + std::to_string(comPort);
 			hPort = CreateFileA(fname.c_str(),GENERIC_READ|GENERIC_WRITE,0,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);
 			if (hPort == INVALID_HANDLE_VALUE)
 				throw std::runtime_error("Could not open serial port. Please make sure that you are using the right COM port and that the device is ready.");
@@ -165,8 +160,9 @@ void MainWindow::on_link() {
 				QMessageBox::critical(this,"Error","Could not set COM port timeouts.",QMessageBox::Ok);
 
 			// start reading
-			stop_ = false;
-			reader_thread_.reset(new boost::thread(&MainWindow::read_thread,this,hPort,comPort,baudRate,samplingRate,chunkSize,streamName));
+			shutdown_ = false;
+            reader_thread_ = std::make_unique<std::thread>(&MainWindow::read_thread, this, hPort, comPort, baudRate, samplingRate, chunkSize, streamName);
+
 		}
 		catch(std::exception &e) {
 			if (hPort != INVALID_HANDLE_VALUE)
@@ -195,8 +191,8 @@ void MainWindow::read_thread(HANDLE hPort, int comPort, int baudRate, int sampli
 			.append_child_value("unit","integer");
 		info.desc().append_child("acquisition")
 			.append_child("hardware")
-				.append_child_value("com_port",boost::lexical_cast<std::string>(comPort).c_str())
-				.append_child_value("baud_rate",boost::lexical_cast<std::string>(baudRate).c_str());
+				.append_child_value("com_port", std::to_string(comPort))
+				.append_child_value("baud_rate",std::to_string(baudRate));
 
 		// make a new outlet
 		lsl::stream_outlet outlet(info,chunkSize);
@@ -205,16 +201,13 @@ void MainWindow::read_thread(HANDLE hPort, int comPort, int baudRate, int sampli
 		unsigned char byte;
 		short sample;
 		unsigned long bytes_read;
-		while (!stop_) {
+		while (!shutdown_) {
 			// get a sample
 			ReadFile(hPort,&byte,1,&bytes_read,NULL); sample = byte;
 			// transmit it
 			if (bytes_read)
 				outlet.push_sample(&sample);
 		}
-	}
-	catch(boost::thread_interrupted &) {
-		// thread was interrupted: no error
 	}
 	catch(std::exception &e) {
 		// any other error
