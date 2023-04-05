@@ -4,7 +4,7 @@ The program reads a byte stream from a given COM port and emits it as an LSL str
 
 # Usage
   * Start the SerialPort app. You should see a window like the following.
-> ![serialport.png](screenshotsserialport.png)
+    ![serialport.png](serialport.png)
 
   * Make sure that your device is plugged in and that you know its COM port (you can usually check this in the Device Manager).
 
