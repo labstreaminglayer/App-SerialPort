@@ -95,15 +95,9 @@ jobs:
         name: pkg-${{ matrix.config.name }}
         path: package
 
-    - name: upload to release page
-      if: github.event_name == 'release'
-      env:
-        TOKEN: "token ${{ secrets.GITHUB_TOKEN }}"
-        UPLOAD_URL: ${{ github.event.release.upload_url }}
-      run: |
-              UPLOAD_URL=${UPLOAD_URL%\{*} # remove "{name,label}" suffix
-              for pkg in package/*.*; do
-                NAME=$(basename $pkg)
-                MIME=$(file --mime-type $pkg|cut -d ' ' -f2)
-                curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: $TOKEN" -H "Content-Type: $MIME" --data-binary @$pkg $UPLOAD_URL?name=$NAME
-              done
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: |
+          package/*
