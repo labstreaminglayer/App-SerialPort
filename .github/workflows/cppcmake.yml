@@ -1,0 +1,92 @@
+name: CMake C++ CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+    tags: [ "v*.*" ]
+  pull_request:
+    branches: [ "master" ]
+  release:
+    types: [ "created" ]
+
+env:
+  LSL_RELEASE_URL: 'https://github.com/sccn/liblsl/releases/download/v1.16.1/'
+  LSL_RELEASE: '1.16.1'
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+defaults:
+  run:
+    shell: bash
+
+# Check qt_ver on # https://download.qt.io/online/qtsdkrepository/
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - name: "windows-x64"
+          os: "windows-latest"
+          cmake_extra: "-T v142,host=x86"
+          arch: "amd64"
+          qt_arch: "win64_msvc2019_64"
+          qt_ver: "6.4.0"
+        - name: "windows-x86"
+          os: "windows-latest"
+          cmake_extra: "-T v142,host=x86 -A Win32"
+          arch: "i386"
+          qt_arch: "win32_msvc2019"
+          qt_ver: "5.15.2"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download liblsl
+      run: |
+           curl -L ${LSL_RELEASE_URL}/liblsl-${LSL_RELEASE}-Win_${{ matrix.config.arch}}.zip -o liblsl.zip
+           7z x liblsl.zip -oLSL
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3.0.0
+      with:
+         version: ${{ matrix.config.qt_ver }}
+         arch: ${{ matrix.config.qt_arch }}
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: |
+           cmake --version
+           cmake -S . -B build \
+                -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+                -DCMAKE_INSTALL_PREFIX=${PWD}/install \
+                -DCPACK_PACKAGE_DIRECTORY=${PWD}/package \
+                -DLSL_INSTALL_ROOT=${PWD}/LSL/ \
+                ${{ matrix.config.cmake_extra }}
+
+    - name: make
+      run: cmake --build build --config ${{env.BUILD_TYPE}} -j --target install
+
+    - name: package
+      run: |
+           export LD_LIBRARY_PATH=$Qt5_DIR/lib:$Qt6_DIR/lib:$LD_LIBRARY_PATH
+           cmake --build build --config ${{env.BUILD_TYPE}} -j --target package
+           cmake -E remove_directory package/_CPack_Packages
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
+      with:
+        name: pkg-${{ matrix.config.name }}
+        path: package
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: |
+          package/*

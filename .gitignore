@@ -6,3 +6,6 @@ ui_*.h
 /CMakeSettings.json
 /out/
 .DS_Store
+.idea/
+cmake-build-*/
+/install/
