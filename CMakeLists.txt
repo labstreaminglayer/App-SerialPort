@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(SerialPortLSL
+project(SerialPort
     DESCRIPTION "Read byte stream from COM port and emit as an LSL stream"
     HOMEPAGE_URL "https://github.com/labstreaminglayer/App-SerialPort/"
     LANGUAGES CXX
@@ -30,9 +30,6 @@ set(CMAKE_AUTOUIC ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 
-## Boost
-find_package(Boost REQUIRED)
-
 ## Threads
 find_package(Threads REQUIRED)
 
@@ -44,7 +41,7 @@ add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} PRIVATE
     main.cpp
     mainwindow.cpp
-    mainwindow.h
+    mainwindow.hpp
     mainwindow.ui
 )
 
@@ -52,7 +49,6 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
-    Boost::headers
     Threads::Threads
     LSL::lsl
 )
